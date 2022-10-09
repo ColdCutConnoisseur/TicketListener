@@ -22,12 +22,14 @@ class TicketListener:
         self.refresh_time_limits = refresh_time_limits
 
         #Create driver
-        self.driver = uc.Chrome(main_version=106)
+        uc_options = uc.ChromeOptions()
+        uc_options.add_argument("--headless")
+
+        self.driver = uc.Chrome(options=uc_options, version_main=106)
         self.default_wait = WebDriverWait(self.driver, 30)
 
         #Twilio (SMS messaging)
         self.twilio_client = Client(os.environ['TWILIO_ACCOUNT_SID'], os.environ['TWILIO_AUTH_TOKEN'])
-
 
     def _sleep_for_random_time(self):
         """Create a list of range(lower_limit, upper_limit) and then random choice to sleep"""
