@@ -23,7 +23,7 @@ class TicketListener:
 
         #Create driver
         uc_options = uc.ChromeOptions()
-        uc_options.add_argument("--headless")
+        #uc_options.add_argument("--headless")
 
         self.driver = uc.Chrome(options=uc_options, version_main=106)
         self.default_wait = WebDriverWait(self.driver, 30)
@@ -109,8 +109,9 @@ class TicketListener:
                     ec.visibility_of_element_located((By.XPATH, table_xpath)))
 
         except TimeoutException:
-            print("Unable to successfully locate the ticket table.  Exiting...")
-            sys.exit(0)
+            print("Unable to successfully locate the ticket table.  Ignoring...")
+            return 0
+            #sys.exit(0)
 
         print("Ticket table found!")
 
@@ -174,14 +175,19 @@ class TicketListener:
             self._check_prices()
             self._sleep_for_random_time()
             self._refresh_current_page()
-            self._click_continue_button()
+
+            try:
+                self._click_continue_button()
+
+            except TimeoutException:  #Will work on following re-loop
+                pass
 
 
 if __name__ == "__main__":
     EVENT_NOTE = "King Gizz Tickets"
     EVENT_URL = "https://tix.axs.com/rWWALgAAAACxketzAAAAAAAk%2fv%2f%2f%2fwD%2f%2f%2f%2f%2fBlJhZGl1cwD%2f%2f%2f%2f%2f%2f%2f%2f%2f%2fw%3d%3d/shop/search?locale=en-US&aff=usaffsongkick"
-    MAX_PRICE_THRESHOLD = 100
-    REFRESH_TIME_LIMITS = [30, 120] #Lower / Upper limits in seconds
+    MAX_PRICE_THRESHOLD = 70
+    REFRESH_TIME_LIMITS = [30, 60] #Lower / Upper limits in seconds
 
     listener = TicketListener(EVENT_NOTE, EVENT_URL, MAX_PRICE_THRESHOLD, REFRESH_TIME_LIMITS)
 
